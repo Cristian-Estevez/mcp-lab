@@ -1,3 +1,21 @@
+# Local Claude Code context — never push to public repo
+.claude/
+
+# Node / MCP Apps UI
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / credentials — must never be committed to this public repo
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

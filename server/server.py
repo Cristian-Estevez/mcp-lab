@@ -18,7 +18,7 @@ import os
 
 from fastmcp import FastMCP
 
-from tools.dummy import register_tools
+from tools.dummy import dummy
 
 
 def _setup_logging() -> None:
@@ -36,10 +36,7 @@ _setup_logging()
 
 mcp = FastMCP("mcp-lab")
 
-# Register all tool groups onto the server instance.
-# Each module exposes a register(mcp) function so tools stay in their own file
-# without importing the server instance (avoids circular imports).
-register_tools(mcp)
+mcp.mount(dummy)
 
 
 if __name__ == "__main__":

@@ -18,6 +18,16 @@ TOOLS: list[types.Tool] = [
             },
             "required": ["message"],
         },
+        # annotations are hints to the host/client about tool behaviour.
+        # readOnlyHint: true signals this tool has no side effects — safe to
+        # call freely. title is the human-readable label shown in host UIs.
+        annotations=types.ToolAnnotations(
+            title="Echo",
+            readOnlyHint=True,    # no side effects
+            destructiveHint=False, # irrelevant when readOnlyHint=True, but explicit for clarity
+            idempotentHint=True,   # same — irrelevant when readOnly, but true: same input → same output always
+            openWorldHint=False,   # pure computation, no external systems touched
+        ),
     ),
     types.Tool(
         name="add",
@@ -30,6 +40,13 @@ TOOLS: list[types.Tool] = [
             },
             "required": ["a", "b"],
         },
+        annotations=types.ToolAnnotations(
+            title="Add",
+            readOnlyHint=True,
+            destructiveHint=False,
+            idempotentHint=True,
+            openWorldHint=False,
+        ),
     ),
 ]
 

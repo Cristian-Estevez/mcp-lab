@@ -59,7 +59,7 @@
 ## Phase 4 — MCP Apps
 
 **Deliverables:**
-- `server/apps/dashboard/index.html` — minimal interactive MCP App
+- `server/apps/dashboard/index.html` — minimal interactive MCP App (pre-built)
 - Tool that declares `_meta.ui.resourceUri` pointing to `ui://dashboard`
 - Server returns `ui://dashboard` resource with the HTML payload
 - Bidirectional communication demo (app calls a tool, host proxies it)
@@ -68,7 +68,24 @@
 
 **Tech split:**
 - Server: Python (serves the `ui://` resource and handles tool calls)
-- App UI: vanilla JS or React (runs inside host's sandboxed iframe)
+- App UI: vanilla JS (runs inside host's sandboxed iframe)
+- Build step: Node.js — required to inline the `@modelcontextprotocol/ext-apps` bundle into the widget HTML before the Python server can serve it
+
+**Why a Node build step is mandatory:**
+The host's iframe sandbox blocks all external script fetches (strict CSP). The
+`ext-apps` browser bundle that powers `App.connect()` / `sendMessage()` / etc.
+must be inlined directly into the HTML at build time — it cannot be loaded from
+a CDN at runtime. The Python server then serves the already-bundled HTML as a
+static string.
+
+**Critical implementation details:**
+- The `ui://` resource MUST return MIME type `text/html;profile=mcp-app` — this
+  is how the host distinguishes a widget resource from plain HTML to display.
+  Any other MIME type causes the host to render raw source instead of an iframe.
+- Tool declaration in Python: `meta={"ui": {"resourceUri": "ui://dashboard"}}` —
+  the Python SDK's `types.Tool` supports `_meta` natively via the `meta` kwarg.
+- `annotations=types.ToolAnnotations(readOnlyHint=True)` should be set on any
+  tool that only displays data (no side effects).
 
 **Supported hosts:** Claude Desktop, Claude.ai, VS Code Copilot, MCPJam
 

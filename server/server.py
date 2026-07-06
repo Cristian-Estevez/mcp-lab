@@ -10,8 +10,11 @@ Protocol flow on startup:
 Run:
   python server/server.py          (from project root)
   .venv/bin/python server/server.py
+
+Logs: mcp-server.log (project root) — full JSON-RPC message trace at DEBUG level.
 """
 import asyncio
+import logging
 import sys
 import os
 
@@ -23,6 +26,21 @@ from mcp.server.stdio import stdio_server
 from mcp import types
 
 from tools.dummy import list_tools, call_tool
+
+
+def _setup_logging() -> None:
+    # Log to a file — stdout/stdin are reserved for the MCP stdio transport,
+    # and stderr output can confuse some clients. The log file sits at the
+    # project root so it's easy to tail during development.
+    log_path = os.path.join(os.path.dirname(__file__), "..", "mcp-server.log")
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s  %(levelname)-8s  %(name)s  %(message)s",
+        handlers=[logging.FileHandler(os.path.normpath(log_path), mode="a")],
+    )
+
+
+_setup_logging()
 
 # The server name is sent to the client during the initialize handshake.
 server = Server("mcp-lab")

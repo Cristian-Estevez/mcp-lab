@@ -4,6 +4,9 @@
 # Node / MCP Apps UI
 node_modules/
 
+# Dev logs
+mcp-server.log
+
 # OS
 .DS_Store
 Thumbs.db
